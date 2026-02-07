@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accessibility Errors - Test Scenarios</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    @keyframes gradient-shift {
+
+      0%,
+      100% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-20px);
+      }
+    }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(-45deg, #a8edea, #fed6e3, #d299c2, #fef9d7);
+      background-size: 400% 400%;
+      animation: gradient-shift 15s ease infinite;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+      border-radius: 50%;
+      top: -250px;
+      right: -250px;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    body::after {
+      content: '';
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+      border-radius: 50%;
+      bottom: -150px;
+      left: -150px;
+      animation: float 8s ease-in-out infinite reverse;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      padding: 40px;
+      border-radius: 24px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.2);
+      max-width: 600px;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    h1 {
+      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+      font-size: 32px;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 25px;
+      font-size: 15px;
+      text-align: center;
+      font-weight: 400;
+    }
+
+    .category-badge {
+      background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);
+      color: white;
+      padding: 8px 18px;
+      border-radius: 25px;
+      font-size: 13px;
+      display: inline-block;
+      margin-bottom: 20px;
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(111, 66, 193, 0.3);
+      letter-spacing: 0.5px;
+    }
+
+    .bug-selector {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+
+    .bug-btn {
+      flex: 1;
+      min-width: 140px;
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.8);
+      border: 2px solid rgba(168, 237, 234, 0.3);
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      color: #333;
+    }
+
+    .bug-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(168, 237, 234, 0.3);
+      border-color: #a8edea;
+    }
+
+    .bug-btn.active {
+      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 8px 20px rgba(168, 237, 234, 0.4);
+    }
+
+    .bug-info {
+      background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
+      border: 2px solid #ffc107;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      font-size: 13px;
+      box-shadow: 0 4px 12px rgba(255, 193, 7, 0.2);
+    }
+
+    .bug-info strong {
+      color: #856404;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .bug-info p {
+      color: #856404;
+      line-height: 1.6;
+    }
+
+    .bug-display {
+      display: none;
+    }
+
+    .bug-display.active {
+      display: block;
+    }
+
+    .icon-btn {
+      padding: 12px 20px;
+      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      border: none;
+      border-radius: 12px;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-right: 10px;
+    }
+
+    .focus-trap {
+      position: relative;
+    }
+
+    .focus-trap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      /* BUG: Creates focus trap */
+    }
+
+    /* Bug 3: Low contrast */
+    .low-contrast-text {
+      color: #cccccc;
+      /* BUG: Very low contrast on white */
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+
+    .signup-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-top: 10px;
+      box-shadow: 0 10px 25px rgba(168, 237, 234, 0.3);
+      letter-spacing: 0.5px;
+    }
+
+    .signup-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 35px rgba(168, 237, 234, 0.4);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 30px 20px;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      .bug-btn {
+        min-width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <span class="category-badge">🟣 Accessibility Errors</span>
+    <h1>Test Scenarios</h1>
+    <p class="subtitle">Select a bug to test</p>
+
+    <div class="bug-selector">
+      <button class="bug-btn active" onclick="showBug(1)">Bug 1: No ARIA</button>
+      <button class="bug-btn" onclick="showBug(2)">Bug 2: Keyboard</button>
+      <button class="bug-btn" onclick="showBug(3)">Bug 3: Contrast</button>
+      <button class="bug-btn" onclick="showBug(4)">Bug 4: No Alt</button>
+    </div>
+
+    <!-- Bug 1: No ARIA Labels -->
+    <div class="bug-display active" id="bug1">
+      <div class="bug-info">
+        <strong>🐛 Bug 1: No ARIA Labels</strong>
+        <p>Icon-only buttons without aria-label. Screen readers can't understand them!</p>
+      </div>
+
+      <div style="margin-bottom: 20px;">
+        <!-- BUG: No aria-label! -->
+        <button class="icon-btn">❤️</button>
+        <button class="icon-btn">🔔</button>
+        <button class="icon-btn">⚙️</button>
+        <button class="icon-btn">🔍</button>
+      </div>
+
+      <div style="padding: 15px; background: rgba(0,0,0,0.05); border-radius: 8px; font-size: 13px;">
+        <strong>💡 Tip:</strong> These icon buttons have no aria-label or title. Screen reader users won't know what
+        they do!
+      </div>
+    </div>
+
+    <!-- Bug 2: Keyboard Navigation Broken -->
+    <div class="bug-display" id="bug2">
+      <div class="bug-info">
+        <strong>🐛 Bug 2: Keyboard Navigation Broken</strong>
+        <p>Tab key doesn't work on inputs. tabindex=-1 prevents keyboard access!</p>
+      </div>
+
+      <form>
+        <div style="margin-bottom: 15px;">
+          <label>Email (Try pressing Tab)</label>
+          <!-- BUG: tabindex=-1 prevents keyboard navigation! -->
+          <input type="email" class="no-tab"
+            style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; margin-top: 5px;">
+        </div>
+
+        <div style="margin-bottom: 15px;">
+          <label>Password (Also can't Tab here)</label>
+          <input type="password" class="no-tab"
+            style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; margin-top: 5px;">
+        </div>
+
+        <button type="submit" class="signup-btn no-tab">Sign Up (Can't Tab here either)</button>
+      </form>
+
+      <div style="margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.05); border-radius: 8px; font-size: 13px;">
+        <strong>💡 Try It:</strong> Press Tab key repeatedly. You can't navigate to any form fields!
+      </div>
+    </div>
+
+    <!-- Bug 3: Low Contrast -->
+    <div class="bug-display" id="bug3">
+      <div class="bug-info">
+        <strong>🐛 Bug 3: Low Contrast Text</strong>
+        <p>Text color #cccccc on white background. WCAG contrast ratio: FAIL!</p>
+      </div>
+
+      <div class="low-contrast-text">
+        This text has very low contrast (#cccccc on white). It fails WCAG AA and AAA standards. People with visual
+        impairments will struggle to read this.
+      </div>
+
+      <div class="low-contrast-text">
+        Contrast ratio: ~1.6:1 (WCAG requires 4.5:1 for normal text, 3:1 for large text)
+      </div>
+
+      <button class="signup-btn" style="background: #e0e0e0; color: #cccccc;">
+        Sign Up (Low Contrast Button)
+      </button>
+
+      <div style="margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.05); border-radius: 8px; font-size: 13px;">
+        <strong>💡 Tip:</strong> The text above is very hard to read due to low contrast!
+      </div>
+    </div>
+
+    <!-- Bug 4: Missing Alt Text -->
+    <div class="bug-display" id="bug4">
+      <div class="bug-info">
+        <strong>🐛 Bug 4: Missing Alt Text</strong>
+        <p>Images without alt attributes. Screen readers can't describe them!</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px;">
+        <!-- BUG: No alt text! -->
+        <div
+          style="aspect-ratio: 16/9; background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">
+          Image 1
+        </div>
+        <div
+          style="aspect-ratio: 16/9; background: linear-gradient(135deg, #fed6e3 0%, #a8edea 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">
+          Image 2
+        </div>
+      </div>
+
+      <div style="padding: 15px; background: rgba(0,0,0,0.05); border-radius: 8px; font-size: 13px;">
+        <strong>💡 Tip:</strong> These images have no alt text. Screen readers will just say "image" with no
+        description!
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentBug = 1;
+
+    function showBug(bugNumber) {
+      // Update buttons
+      document.querySelectorAll('.bug-btn').forEach((btn, index) => {
+        btn.classList.toggle('active', index + 1 === bugNumber);
+      });
+
+      // Update displays
+      document.querySelectorAll('.bug-display').forEach((display, index) => {
+        display.classList.toggle('active', index + 1 === bugNumber);
+      });
+
+      currentBug = bugNumber;
+      console.log(`Switched to Bug ${bugNumber}`);
+
+      if (bugNumber === 1) {
+        console.log('='.repeat(60));
+        console.log('🐛 BUG 1: No ARIA Labels');
+        console.error('❌ Icon buttons have no aria-label');
+        console.error('❌ Screen readers can\'t describe button purpose');
+        console.error('❌ Accessibility violation');
+        console.log('='.repeat(60));
+      } else if (bugNumber === 2) {
+        console.log('='.repeat(60));
+        console.log('🐛 BUG 2: Keyboard Navigation Broken');
+        console.error('❌ All inputs have tabindex="-1"');
+        console.error('❌ Tab key navigation completely broken');
+        console.error('❌ Keyboard users can\'t access form');
+        console.log('='.repeat(60));
+      } else if (bugNumber === 3) {
+        console.log('='.repeat(60));
+        console.log('🐛 BUG 3: Low Contrast Text');
+        console.error('❌ Text color: #cccccc on white');
+        console.error('❌ Contrast ratio: ~1.6:1 (WCAG requires 4.5:1)');
+        console.error('❌ WCAG AA/AAA: FAIL');
+        console.log('='.repeat(60));
+      } else if (bugNumber === 4) {
+        console.log('='.repeat(60));
+        console.log('🐛 BUG 4: Missing Alt Text');
+        console.error('❌ Images have no alt attributes');
+        console.error('❌ Screen readers can\'t describe images');
+        console.error('❌ Accessibility violation');
+        console.log('='.repeat(60));
+      }
+    }
+
+    // Log initial bug
+    showBug(1);
+  </script>
+</body>
+
+</html>
